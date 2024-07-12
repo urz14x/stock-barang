@@ -12,11 +12,11 @@ class StockInController extends Controller
 {
     public function index()
     {
-        $stockin = StockIn::query()->with('stock')->select('id', 'quantity', 'stock_id')->get();
-        return StockInResource::collection($stockin->all());
-        // return inertia("Barang/Masuk", [
-        //     'stockin' => $stockin
-        // ]);
+        $stockin = StockIn::query()->with('stock')->select('id', 'quantity', 'stock_id')->paginate(5);
+        StockResource::collection($stockin);
+        return inertia("Barang/Masuk", [
+            'stockin' => $stockin
+        ]);
     }
     public function store(Request $request)
     {
