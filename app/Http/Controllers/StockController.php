@@ -4,17 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\StockResource;
 use App\Models\Stock;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class StockController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $stocks = Stock::query()->with('stock_ins')->select('id', 'name', 'stock')->paginate(5);
-        StockResource::collection($stocks);
+        $query = Stock::query();
+        if($request->has('q') && !empty($request->input('search'))){
+            $search = $request->q;
+
+            $query->where('name', 'like', '%' . $search . '%');
+
+            // Dapatkan semua hasil yang cocok dengan pencarian tanpa pagination
+            $stocks = $query->get();
+        }else {
+            // Jika tidak ada pencarian, gunakan pagination
+            $stocks = (
+                StockResource::collection(Stock::query()->where('name', 'like', '%' . $request->q . '%')->with('stock_ins')->select('id', 'name', 'stock', 'created_at')->paginate(5))
+            )->additional([
+                'attributes' => [
+                    'total' => Stock::count(),
+                    'per_page' => 5
+                ],
+                'filtered' => [
+                    'q' => $request->q ?? '',
+                    'start_date' => $request->start_date ?? Carbon::now(),
+                    'end_date' => $request->end_date ?? Carbon::now(),
+                    'page' => $request->page ?? 1,
+                ]
+            ]);
+        }
+
         return inertia('Dashboard', [
             'stocks' => $stocks
         ]);
@@ -80,6 +102,6 @@ class StockController extends Controller
     public function destroy($id)
     {
         Stock::find($id)->delete();
-        return  to_route('dashboard');
+        return to_route('dashboard');
     }
 }

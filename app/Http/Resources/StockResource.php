@@ -18,6 +18,7 @@ class StockResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'stock' => $this->stock,
+            'created_at' => $this->created_at
         ];
     }
 }

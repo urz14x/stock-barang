@@ -20,7 +20,7 @@
     @inertiaHead
 </head>
 
-<body class="font-poppins antialiased">
+<body class="font-poppins antialiased text-sm tracking-tight">
     @inertia
 </body>
 

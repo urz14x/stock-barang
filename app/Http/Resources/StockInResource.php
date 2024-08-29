@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,11 +17,9 @@ class StockInResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'stock' => [
-                'id' => $this->stock->id,
-                'name' => $this->stock->name
-            ],
-            'quantity' => $this->quantity
+            'stocks_name' => $this->stock->name,
+            'quantity' => $this->quantity,
+            'created_at' => $this->created_at,
         ];
     }
 }
