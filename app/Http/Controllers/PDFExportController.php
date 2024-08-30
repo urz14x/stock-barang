@@ -25,7 +25,7 @@ class PDFExportController extends Controller
         $stocks = Stock::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->get();
 
         // Membuat view untuk PDF
-        $pdf = PDF::loadView('StockInExport', compact('stocks', 'start_date', 'end_date'));
+        $pdf = PDF::loadView('StockExport', compact('stocks', 'start_date', 'end_date'));
 
         // Mengunduh file PDF
         return $pdf->download(Carbon::now() . '-laporan-stock.pdf');

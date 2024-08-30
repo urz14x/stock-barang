@@ -14,15 +14,26 @@ class StockInController extends Controller
     public function index(Request $request)
     {
         $query = StockIn::query();
-        $stockin = (StockResource::collection(Stock::get()))->additional([
-            'stocks' => StockInResource::collection($query->with('stock')->whereDate('created_at', '>=', date($request->start_date))->whereDate('created_at', '<=', date($request->end_date))->where('stock_id', 'like', '%' . $request->q . '%')->paginate(10)),
-            'filtered' => [
-                'q' => $request->q ?? '',
-                'start_date' => $request->start_date ?? Carbon::now(),
-                'end_date' => $request->end_date ?? Carbon::now()
-            ]
-        ]);
-        // return $stockin;
+        if ($request->has('q') && !empty($request->input('search'))) {
+            $search = $request->q;
+
+            $query->where('stock_id', 'like', '%' . $search . '%');
+
+            // Dapatkan semua hasil yang cocok dengan pencarian tanpa pagination
+            $stockin = $query->get();
+        } else {
+            $stockin = (
+                StockInResource::collection(StockIn::query()->whereDate('created_at', '>=', date($request->start_date))->whereDate('created_at', '<=', date($request->end_date))->where('stock_id', 'like', '%' . $request->q . '%')->paginate(5)))
+                ->additional([
+                    'stocks' => StockResource::collection(Stock::get()),
+                    'filtered' => [
+                        'q' => $request->q ?? '',
+                        'start_date' => $request->start_date ?? Carbon::now(),
+                        'end_date' => $request->end_date ?? Carbon::now()
+                    ]
+                ]);
+        }
+
         return inertia("Barang/Masuk", [
             'stockin' => $stockin
         ]);

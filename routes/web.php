@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get("/stock-edit/{id}", [StockController::class, 'edit'])->name('dashboard.edit');
     Route::patch("/stock/{id}", [StockController::class, 'update'])->name('dashboard.update');
     Route::delete("/stock/{id}", [StockController::class, 'destroy'])->name('dashboard.destroy');
-    Route::get('/export-pdf-stock', [PDFExportController::class, 'exportPDFStock'])->name('export.pdf.stock');
+    Route::get('/export-pdf-stock', [PDFExportController::class, 'exportStock'])->name('export.pdf.stock');
 
     Route::get('/stock-in', [StockInController::class, 'index'])->name('stock.in');
     Route::get('/filter', [StockInController::class, 'filter'])->name('stock.in.filter');

@@ -21,6 +21,7 @@ import { Label } from '@/Components/ui/label';
 import Navbar from '@/Layouts/Navbar';
 import { toast } from '@/Components/ui/use-toast';
 import { ToastAction } from '@/Components/ui/toast';
+import { cn } from '@/lib/utils';
 export default function Dashboard({ stocks }) {
   const { attributes } = stocks;
   const [open, setOpen] = useState(false);
@@ -29,6 +30,7 @@ export default function Dashboard({ stocks }) {
     name: '',
     stock: '',
   });
+
   const [params, setParams] = useState(stocks.filtered);
 
   const reload = useCallback(
@@ -51,7 +53,9 @@ export default function Dashboard({ stocks }) {
   const onChange = (event) => {
     setParams({ ...params, [event.target.name]: event.target.value });
   };
-
+  const handleExportPDF = () => {
+    window.location.href = `/export-pdf-stock?start_date=${params.start_date}&end_date=${params.end_date}`;
+  };
   const handleSubmitStock = (e) => {
     e.preventDefault();
     post(route('dashboard.store'), {
@@ -60,9 +64,7 @@ export default function Dashboard({ stocks }) {
         toast({
           title: 'Terjadi kesalahan',
           description: `Isi form dengan benar`,
-          action: (
-            <ToastAction altText="Gagal Membuat data">Okay!</ToastAction>
-          ),
+          action: <ToastAction altText="Gagal Membuat data">Okay!</ToastAction>,
         }),
       onSuccess: () =>
         toast({
@@ -121,6 +123,28 @@ export default function Dashboard({ stocks }) {
             </div> */}
           </div>
           <div className="flex items-center gap-4">
+          <div>
+              <form className={cn('flex items-center gap-5')}>
+                <div className="flex items-center">
+                  <label className="w-28">Start date</label>
+                  <Input
+                    type="date"
+                    name="start_date"
+                    value={params.start_date}
+                    onChange={onChange}
+                  />
+                </div>
+                <div className="flex items-center">
+                  <label className="w-28">End date </label>
+                  <Input
+                    type="date"
+                    name="end_date"
+                    value={params.end_date}
+                    onChange={onChange}
+                  />
+                </div>
+              </form>
+            </div>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button className="flex items-center gap-2 text-xs">
@@ -156,7 +180,7 @@ export default function Dashboard({ stocks }) {
                       <Input
                         type="text"
                         id="stock"
-                         value={data.stock}
+                        value={data.stock}
                         onChange={(e) => setData('stock', e.target.value)}
                         className="col-span-3 border"
                       />
@@ -171,7 +195,7 @@ export default function Dashboard({ stocks }) {
                 </form>
               </DialogContent>
             </Dialog>
-            <Button className="flex items-center gap-2 text-xs">
+            <Button onClick={handleExportPDF} className="flex items-center gap-2 text-xs">
               <span>
                 <FileText width={17} height={17} />
               </span>
@@ -182,9 +206,11 @@ export default function Dashboard({ stocks }) {
         {stocks.data.length > 0 ? (
           <TableStock stocks={stocks} params={params} setParams={setParams} />
         ) : (
-          <h1 className="text-sm font-bold flex justify-center items-center w-full h-[300px]">
-            Tidak ada data
-          </h1>
+          <div className="p-2 border-2 w-full border-dashed">
+            <h1 className="text-sm font-bold flex justify-center items-center w-full h-[300px]">
+              Tidak ada data
+            </h1>
+          </div>
         )}
       </Container>
     </>

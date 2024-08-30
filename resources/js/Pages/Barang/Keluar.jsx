@@ -32,7 +32,8 @@ import { ToastAction } from '@/Components/ui/toast';
 import { toast } from '@/Components/ui/use-toast';
 
 export default function Keluar({ stockout }) {
-  const { data: stockouts, stocks } = stockout;
+  const { stocks } = stockout;
+
   const [params, setParams] = useState(stockout.filtered);
   const { post, data, setData } = useForm({
     stock_id: 0,
@@ -159,7 +160,7 @@ export default function Keluar({ stockout }) {
                           <SelectGroup>
                             <SelectLabel>Barang</SelectLabel>
                             {/* Use map to loop over the dynamic list */}
-                            {stockouts.map((data) => (
+                            {stocks.map((data) => (
                               // Make sure to set a unique key for each SelectItem
                               <SelectItem key={data.id} value={`${data.id}`}>
                                 {data.name}
@@ -210,7 +211,16 @@ export default function Keluar({ stockout }) {
             </Button>
           </div>
         </div>
-        <TableKeluar stocks={stocks} />
+
+        {stockout.data.length > 0 ? (
+          <TableKeluar stockouts={stockout} params={params} setParams={setParams} />
+        ) : (
+          <div className="p-2 border-2 w-full border-dashed">
+            <h1 className="text-sm font-bold flex justify-center items-center w-full h-[300px]">
+              Tidak ada data
+            </h1>
+          </div>
+        )}
       </Container>
     </>
   );

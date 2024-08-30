@@ -39,8 +39,10 @@ export default function TableStock({ stocks, params, setParams }) {
         </TableHeader>
         <TableBody>
           {stocks.data.map((stock, i) => (
-            <TableRow key={i+1}>
-              <TableCell className="font-medium">{formatDate(new Date(stock.created_at), 'MM/dd/yyyy')}</TableCell>
+            <TableRow key={i + 1}>
+              <TableCell className="font-medium">
+                {formatDate(new Date(stock.created_at), 'MM/dd/yyyy')}
+              </TableCell>
               <TableCell>{stock.name}</TableCell>
               <TableCell className="font-bold">{stock.stock}</TableCell>
               <TableCell className="flex items-center gap-4">
@@ -104,17 +106,6 @@ export default function TableStock({ stocks, params, setParams }) {
       </Table>
       <Container className=" relative bottom-0 flex flex-wrap items-center gap-2 w-full">
         {stocks.meta.links.map((item) => (
-          // <Link
-          //     disabled={item.url === null ? true : false}
-          //     as="button"
-          //     className={`${
-          //         item.url == null
-          //             ? "text-gray-300 cursor-not-allowed"
-          //             : "text-slate-800"
-          //     } w-auto p-2 h-9 flex justify-center items-center border hover:bg-clr-primary transition-all rounded bg-white`}
-          //     href={item.url || ""}
-          //     dangerouslySetInnerHTML={{ __html: item.label }}
-          // />
           <Button
             variant="ghost"
             className={`${
@@ -128,8 +119,7 @@ export default function TableStock({ stocks, params, setParams }) {
                 page: new URL(item.url).searchParams.get('page'),
               })
             }>
-                <span dangerouslySetInnerHTML={{ __html:   item.label }} />
-
+            <span dangerouslySetInnerHTML={{ __html: item.label }} />
           </Button>
         ))}
       </Container>

@@ -33,18 +33,13 @@ import { toast } from '@/Components/ui/use-toast';
 import { ToastAction } from '@/Components/ui/toast';
 
 export default function Masuk({ stockin }) {
-  const { data: stockins, stocks } = stockin;
-    console.log(stockins)
+  const { stocks } = stockin;
+  console.log('stockin ', stockin);
   const [params, setParams] = useState(stockin.filtered);
   const { data, setData, post, reset } = useForm({
     stock_id: 0,
     quantity: 0,
   });
-  //   const [date_start, setDateStart] = useState();
-  //   const [date_end, setDateEnd] = useState();
-  console.log(
-    `/export-pdf?start_date=${params.start_date}&end_date=${params.end_date}`
-  );
   const handleExportPDF = () => {
     window.location.href = `/export-pdf?start_date=${params.start_date}&end_date=${params.end_date}`;
   };
@@ -92,7 +87,7 @@ export default function Masuk({ stockin }) {
     <>
       <Head title="Barang Masuk" />
       <Navbar>Barang Masuk</Navbar>
-      <Container className="flex flex-col items-start gap-5">
+      <Container className="flex flex-col items-start gap-5 text-xs">
         <div>
           <h2 className="text-xl font-semibold">Barang Masuk</h2>
           <p className="text-xs text-foreground/50">
@@ -175,7 +170,7 @@ export default function Masuk({ stockin }) {
                           <SelectGroup>
                             <SelectLabel>Barang</SelectLabel>
                             {/* Use map to loop over the dynamic list */}
-                            {stockins.map((data) => (
+                            {stockin.stocks.map((data) => (
                               // Make sure to set a unique key for each SelectItem
                               <SelectItem key={data.id} value={`${data.id}`}>
                                 {data.name}
@@ -216,7 +211,16 @@ export default function Masuk({ stockin }) {
             </Button>
           </div>
         </div>
-        <TableMasuk stocks={stocks} params={params} />
+
+        {stockin.data.length > 0 ? (
+          <TableMasuk stockins={stockin} params={params} setParams={setParams} />
+        ) : (
+          <div className="p-2 border-2 w-full border-dashed">
+            <h1 className="text-sm font-bold flex justify-center items-center w-full h-[300px]">
+              Tidak ada data
+            </h1>
+          </div>
+        )}
       </Container>
     </>
   );

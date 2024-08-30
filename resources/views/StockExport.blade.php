@@ -28,9 +28,9 @@
     }
   </style>
 </head>
-<body>
+<body style="font-family: sans-serif;">
     <h1 class="text-3xl font-bold underline">
-        Export Laporan Stock Barang Masuk Miftah Mesin
+        Export Laporan Stock Barang Miftah Mesin
       </h1>
       <p>Pada Bulan {{ \Carbon\Carbon::parse($start_date)->format('Y-m-d') }} s.d {{ \Carbon\Carbon::parse($end_date)->format('Y-m-d') }} </p>
     <div class="relative overflow-x-auto">
@@ -44,22 +44,22 @@
                         Nama barang
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Jumlah
+                        Stok
                     </th>
                 </tr>
             </thead>
             <tbody>
 
-                @foreach ($stockins as $stock)
+                @foreach ($stocks as $stock)
                     <tr style="">
                         <td scope="row" style="width:5%; padding: 5px;" >
                             {{ $stock->id }}
                         </td>
                         <td scope="row" style="width:100%; padding: 5px;;">
-                            {{ $stock->stock->name }}
+                            {{ $stock->name }}
                         </td>
                         <td scope="row" style="width:10%; padding: 5px;">
-                            {{ $stock->quantity }}
+                            {{ $stock->stock }}
                         </td>
 
                     </tr>

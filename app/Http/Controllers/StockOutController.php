@@ -23,15 +23,15 @@ class StockOutController extends Controller
             $stockout = $query->get();
         } else {
             $stockout = (
-                StockResource::collection(Stock::get()))
+                StockOutResource::collection(StockOut::query()->whereDate('created_at', '>=', date($request->start_date))->whereDate('created_at', '<=', date($request->end_date))->where('customer', 'like', '%' . $request->q . '%')->paginate(5)))
                 ->additional([
-                'stocks' => StockOutResource::collection($query->with('stock')->where('customer', 'like', '%' . $request->q . '%')->whereDate('created_at', '>=', date($request->start_date))->whereDate('created_at', '<=', date($request->end_date))->paginate(5)),
-                'filtered' => [
-                    'q' => $request->q ?? '',
-                    'start_date' => $request->start_date ?? Carbon::now(),
-                    'end_date' => $request->end_date ?? Carbon::now()
-                ]
-            ]);
+                    'stocks' => StockResource::collection(Stock::get()),
+                    'filtered' => [
+                        'q' => $request->q ?? '',
+                        'start_date' => $request->start_date ?? Carbon::now(),
+                        'end_date' => $request->end_date ?? Carbon::now()
+                    ]
+                ]);
         }
 
         return inertia("Barang/Keluar", [

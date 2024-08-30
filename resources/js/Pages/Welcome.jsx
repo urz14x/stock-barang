@@ -28,7 +28,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
         <div className="flex items-center">
           <div className="min-w-96 h-[500px] bg-clr-secondary rounded-l-lg shadow-inner hidden lg:block ">
             <div className="flex flex-col justify-center items-center mt-36">
-              <img src="/img/Logo.png" className="w-32 h-32" />
+              <img src="/img/Logo.png" className="w-32 h-32" alt="Logo miftah machine" />
 
               <h2 className="text-3xl font-poppins font-semibold bg-clip-text text-transparent bg-gradient-to-r from-clr-orange to-clr-yellow">
                 Miftah Machine

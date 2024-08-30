@@ -24,7 +24,7 @@ export default function Sidebar() {
     <div className="flex items-center fixed z-50">
       <nav className="w-[300px] min-h-screen flex flex-col justify-between border-r p-4 bg-clr-secondary">
         <header className="flex flex-col items-center w-full">
-          <img src="/img/Logo.png" alt="" />
+          <img src="/img/Logo.png" className="w-32 h-32" alt="" />
           <h1 className="uppercase font-bold">Miftah Mesin</h1>
           <p className="text-center text-xs text-brand">
             <strong>Kreativitas Anda, Mesin Jahit Kami.</strong>
