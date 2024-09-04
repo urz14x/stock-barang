@@ -5,8 +5,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockInController;
 use App\Http\Controllers\StockOutController;
-use App\Models\StockIn;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 

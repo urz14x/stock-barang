@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 export default function Dashboard({ stocks }) {
   const { attributes } = stocks;
   const [open, setOpen] = useState(false);
-  const [pageNumber, setPageNumber] = useState([]);
+
   const { data, setData, post, processing, reset } = useForm({
     name: '',
     stock: '',
@@ -42,13 +42,6 @@ export default function Dashboard({ stocks }) {
     []
   );
   useEffect(() => reload(params), [params]);
-  useEffect(() => {
-    let numbers = [];
-    for (let i = attributes.per_page; i <= attributes.total; i += 5) {
-      numbers.push(i);
-    }
-    setPageNumber(numbers);
-  }, []);
   // console.log(attributes.per_page);
   const onChange = (event) => {
     setParams({ ...params, [event.target.name]: event.target.value });

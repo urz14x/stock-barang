@@ -53,7 +53,7 @@ export default function Masuk({ stockin }) {
           title: 'Terjadi kesalahan',
           description: `Isi form dengan benar`,
           action: (
-            <ToastAction altText="Goto schedule to undo">Okay!</ToastAction>
+            <ToastAction altText="Isi form dengan benar">Okay!</ToastAction>
           ),
         }),
       onSuccess: () =>
@@ -169,7 +169,7 @@ export default function Masuk({ stockin }) {
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Barang</SelectLabel>
-                            {/* Use map to loop over the dynamic list */}
+
                             {stockin.stocks.map((data) => (
                               // Make sure to set a unique key for each SelectItem
                               <SelectItem key={data.id} value={`${data.id}`}>

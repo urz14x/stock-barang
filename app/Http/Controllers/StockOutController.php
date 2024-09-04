@@ -49,7 +49,6 @@ class StockOutController extends Controller
         if ($stock->stock  < $request->quantity) {
             return redirect()->back();
         }
-
         $stock->stock -= $request->quantity;
         $stock->save();
         StockOut::updateOrCreate(['stock_id' => $request->stock_id], [
@@ -57,8 +56,7 @@ class StockOutController extends Controller
             'customer' => $request->customer
         ]);
 
-
-        return to_route('stock.out');
+        return redirect('/stock-out');
     }
     public function destroy($id)
     {

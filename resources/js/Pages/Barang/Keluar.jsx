@@ -8,6 +8,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { FileText, PlusCircle, Search } from 'lucide-react';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -35,7 +36,7 @@ export default function Keluar({ stockout }) {
   const { stocks } = stockout;
 
   const [params, setParams] = useState(stockout.filtered);
-  const { post, data, setData } = useForm({
+  const { post, data, setData, reset } = useForm({
     stock_id: 0,
     quantity: 0,
     customer: '',
@@ -57,11 +58,12 @@ export default function Keluar({ stockout }) {
           title: 'Berhasil membuat data barang keluar',
           description: `Data berhasil di masukan!`,
           action: (
-            <ToastAction altText="Goto schedule to undo">Okay!</ToastAction>
+            <ToastAction altText="Isi form dengan benar">Okay!</ToastAction>
           ),
         }),
     });
-    reset('name', 'stock');
+    reset('stock_id', 'quantity', 'customer');
+    location.reload()
   };
   const handleExportPDF = () => {
     window.location.href = `/export-pdf-stock-out?start_date=${params.start_date}&end_date=${params.end_date}`;
@@ -196,7 +198,9 @@ export default function Keluar({ stockout }) {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type="submit">Simpan</Button>
+                    <DialogClose asChild>
+                      <Button type="submit">Simpan</Button>
+                    </DialogClose>
                   </DialogFooter>
                 </form>
               </DialogContent>
@@ -213,7 +217,11 @@ export default function Keluar({ stockout }) {
         </div>
 
         {stockout.data.length > 0 ? (
-          <TableKeluar stockouts={stockout} params={params} setParams={setParams} />
+          <TableKeluar
+            stockouts={stockout}
+            params={params}
+            setParams={setParams}
+          />
         ) : (
           <div className="p-2 border-2 w-full border-dashed">
             <h1 className="text-sm font-bold flex justify-center items-center w-full h-[300px]">
