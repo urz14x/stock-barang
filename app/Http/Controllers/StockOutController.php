@@ -2,40 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StockInResource;
 use App\Http\Resources\StockOutResource;
 use App\Http\Resources\StockResource;
 use App\Models\Stock;
 use App\Models\StockOut;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class StockOutController extends Controller
 {
     public function index(Request $request)
     {
-        $query = StockOut::query();
-        if ($request->has('q') && !empty($request->input('search'))) {
-            $search = $request->q;
+        $start_date = Carbon::parse($request->input('start_date'))->startOfDay() ?? Carbon::now();
+        $end_date = Carbon::parse($request->input('end_date'))->endOfDay() ?? Carbon::now();
+        $search = $request->input('search');
+        $stockouts = StockOutResource::collection(StockOut::query()->with('stock')->whereHas('stock', function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })->whereBetween("created_at", [$start_date, $end_date])->latest()->paginate(5));
 
-            $query->where('customer', 'like', '%' . $search . '%');
-
-            // Dapatkan semua hasil yang cocok dengan pencarian tanpa pagination
-            $stockout = $query->get();
-        } else {
-            $stockout = (
-                StockOutResource::collection(StockOut::query()->whereDate('created_at', '>=', date($request->start_date))->whereDate('created_at', '<=', date($request->end_date))->where('customer', 'like', '%' . $request->q . '%')->paginate(5)))
-                ->additional([
-                    'stocks' => StockResource::collection(Stock::get()),
-                    'filtered' => [
-                        'q' => $request->q ?? '',
-                        'start_date' => $request->start_date ?? Carbon::now(),
-                        'end_date' => $request->end_date ?? Carbon::now()
-                    ]
-                ]);
-        }
-
-        return inertia("Barang/Keluar", [
-            'stockout' => $stockout
+        return Inertia::render("Barang/Keluar", [
+            'stockouts' => fn() => $stockouts,
+            'stocks' => StockResource::collection(Stock::get()),
+            'state' => $request->only(['search', 'start_date', 'end_date']),
         ]);
     }
     public function store(Request $request)

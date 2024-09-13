@@ -9,6 +9,8 @@ class StockIn extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+
     public function stock()
     {
         return $this->belongsTo(Stock::class);

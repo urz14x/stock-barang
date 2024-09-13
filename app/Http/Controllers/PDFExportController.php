@@ -32,8 +32,8 @@ class PDFExportController extends Controller
     }
     public function exportPDF(Request $request)
     {
-        $start_date = Carbon::parse($request->start_date)->startOfDay() ?? Carbon::now();
-        $end_date = Carbon::parse($request->end_date)->endOfDay() ?? Carbon::now();
+        $start_date = Carbon::parse($request->input('start_date'))->startOfDay() ?? Carbon::now();
+        $end_date = Carbon::parse($request->input('end_date'))->endOfDay() ?? Carbon::now();
         // Ambil data yang ingin diexport
         $stockins = StockIn::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->get();
 

@@ -13,8 +13,9 @@ import { formatDate } from 'date-fns';
 import { router } from '@inertiajs/react';
 import Container from './Container';
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
+import SimplePagination from '@/Components/ui/pagination.jsx';
 
-export default function TableKeluar({ stockouts, params, setParams }) {
+export default function TableKeluar({ stockouts, links, meta, params, setParams, }) {
   const deleteStockOut = (id) => {
     location.href = `/stock-out?start_date=${params.start_date}&end_date=${params.end_date}`;
     router.delete(`/stock-out/${id}`);
@@ -32,7 +33,7 @@ export default function TableKeluar({ stockouts, params, setParams }) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {stockouts.data.map((stock) => (
+        {stockouts.map((stock) => (
           <TableRow key={stock.id}>
             <TableCell className="font-medium">
               {formatDate(new Date(stock.created_at), 'MM-dd-yyyy')}
@@ -97,25 +98,9 @@ export default function TableKeluar({ stockouts, params, setParams }) {
         ))}
       </TableBody>
     </Table>
-    <Container className=" relative bottom-0 flex flex-wrap items-center gap-2 w-full">
-        {stockouts.meta.links.map((item) => (
-          <Button
-            variant="ghost"
-            className={`${
-              item.url == null
-                ? 'text-gray-300 cursor-not-allowed'
-                : 'text-slate-800'
-            } w-auto p-2 h-9 flex justify-center items-center border hover:bg-clr-primary transition-all rounded bg-white`}
-            onClick={() =>
-              setParams({
-                ...params,
-                page: new URL(item.url).searchParams.get('page'),
-              })
-            }>
-            <span dangerouslySetInnerHTML={{ __html: item.label }} />
-          </Button>
-        ))}
-      </Container>
+        <Container>
+            <SimplePagination links={links} meta={meta} />
+        </Container>
     </>
   );
 }

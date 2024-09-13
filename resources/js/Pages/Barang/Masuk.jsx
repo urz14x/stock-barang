@@ -27,27 +27,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/Components/ui/select';
-import { debounce, pickBy } from 'lodash';
 import { cn } from '@/lib/utils';
 import { toast } from '@/Components/ui/use-toast';
 import { ToastAction } from '@/Components/ui/toast';
+import { useFilter } from '@/hooks/useFilter';
 
-export default function Masuk({ stockin }) {
-  const { stocks } = stockin;
-  console.log('stockin ', stockin);
-  const [params, setParams] = useState(stockin.filtered);
+export default function Masuk(props) {
+  const { data: stockins, meta, links } = props.stockins;
+  const stocks = props.stocks;
+  const [params, setParams] = useState(props.state);
   const { data, setData, post, reset } = useForm({
     stock_id: 0,
     quantity: 0,
   });
   const handleExportPDF = () => {
-    window.location.href = `/export-pdf?start_date=${params.start_date}&end_date=${params.end_date}`;
+    window.location.href = `/export-pdf?start_date=${params?.start_date}&end_date=${params?.end_date}`;
   };
   const submitHandler = (e) => {
     e.preventDefault();
 
     post(route('stock.in.store'), {
       preserveScroll: true,
+        onSuccess: () =>
+            toast({
+                title: 'Berhasil membuat data',
+                description: `Data berhasil di masukan!`,
+                action: (
+                    <ToastAction altText="Goto schedule to undo">Okay!</ToastAction>
+                ),
+            }),
       onError: () =>
         toast({
           title: 'Terjadi kesalahan',
@@ -56,33 +64,18 @@ export default function Masuk({ stockin }) {
             <ToastAction altText="Isi form dengan benar">Okay!</ToastAction>
           ),
         }),
-      onSuccess: () =>
-        toast({
-          title: 'Berhasil membuat data',
-          description: `Data berhasil di masukan!`,
-          action: (
-            <ToastAction altText="Goto schedule to undo">Okay!</ToastAction>
-          ),
-        }),
+
     });
     reset('name', 'stock');
-    location.reload()
   };
   const handleStockName = (val) => {
     setData('stock_id', val);
   };
-  const reload = useCallback(
-    debounce((query) => {
-      router.get(route('stock.in'), {...pickBy(query), page: query.q ? 1 : query.page}, {
-        preserveState: true,
-      });
-    }, 150),
-    []
-  );
-  const onChange = (event) => {
-    setParams({ ...params, [event.target.name]: event.target.value });
-  };
-  useEffect(() => reload(params), [params]);
+  useFilter({
+    route: route('stock.in'),
+    values: params,
+    only: ['stockins'],
+  });
   return (
     <>
       <Head title="Barang Masuk" />
@@ -99,9 +92,14 @@ export default function Masuk({ stockin }) {
             <Search width={17} height={17} />
             <Input
               type="text"
-              name="q"
-              value={params.q}
-              onChange={onChange}
+              name="search"
+              value={params?.search}
+              onChange={(e) =>
+                setParams((prev) => ({
+                  ...prev,
+                  search: e.target.value,
+                }))
+              }
               placeholder="Cari Mesin"
             />
           </div>
@@ -110,23 +108,18 @@ export default function Masuk({ stockin }) {
               <form className={cn('flex items-center gap-5')}>
                 <div className="flex items-center">
                   <label className="w-28">Start date</label>
-                  <Input
-                    type="date"
-                    name="start_date"
-                    value={params.start_date}
-                    onChange={onChange}
-                  />
+                  <Input type="date" value={params?.start_date} onChange={(e) => setParams((prev) => ({
+                      ...prev,
+                      start_date: e.target.value
+                  }))} name="start_date" />
                 </div>
-            <div className="flex items-center">
-                <label className="w-28">End date </label>
-                <Input
-                  type="date"
-                  name="end_date"
-                  value={params.end_date}
-                  onChange={onChange}
-                />
-            </div>
-
+                <div className="flex items-center">
+                  <label className="w-28">End date </label>
+                  <Input type="date" name="end_date" value={params?.end_date} onChange={(e) => setParams((prev) => ({
+                      ...prev,
+                      end_date: e.target.value
+                  }))} />
+                </div>
               </form>
             </div>
             <Dialog>
@@ -170,10 +163,10 @@ export default function Masuk({ stockin }) {
                           <SelectGroup>
                             <SelectLabel>Barang</SelectLabel>
 
-                            {stockin.stocks.map((data) => (
+                            {stocks.data.map((stock) => (
                               // Make sure to set a unique key for each SelectItem
-                              <SelectItem key={data.id} value={`${data.id}`}>
-                                {data.name}
+                              <SelectItem key={stock.id} value={`${stock.id}`}>
+                                {stock.name}
                               </SelectItem>
                             ))}
                           </SelectGroup>
@@ -202,6 +195,7 @@ export default function Masuk({ stockin }) {
               </DialogContent>
             </Dialog>
             <Button
+                disabled={params?.start_date && params?.end_date ? false : true}
               onClick={handleExportPDF}
               className="flex items-center gap-2 text-xs">
               <span>
@@ -212,15 +206,13 @@ export default function Masuk({ stockin }) {
           </div>
         </div>
 
-        {stockin.data.length > 0 ? (
-          <TableMasuk stockins={stockin} params={params} setParams={setParams} />
-        ) : (
-          <div className="p-2 border-2 w-full border-dashed">
-            <h1 className="text-sm font-bold flex justify-center items-center w-full h-[300px]">
-              Tidak ada data
-            </h1>
-          </div>
-        )}
+        <TableMasuk
+          stockins={stockins}
+          links={links}
+          meta={meta}
+          params={params}
+          setParams={setParams}
+        />
       </Container>
     </>
   );

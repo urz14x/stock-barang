@@ -12,16 +12,29 @@ import { ArrowLeft, PencilIcon, Trash } from 'lucide-react';
 import { Link, router } from '@inertiajs/react';
 import Container from './Container';
 import { formatDate } from 'date-fns';
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
-export default function TableMasuk({ stockins, params, setParams }) {
-
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/alert-dialog';
+import SimplePagination from './ui/pagination';
+export default function TableMasuk({
+  stockins,
+  links,
+  meta,
+  params,
+  setParams,
+}) {
   const deleteStockIn = (id) => {
     location.href = `/stock-in?start_date=${params.start_date}&end_date=${params.end_date}`;
     router.delete(`/stock-in/${id}`);
   };
   return (
     <>
-
       <Table className="border text-xs">
         <TableHeader className="bg-clr-secondary">
           <TableRow>
@@ -32,7 +45,7 @@ export default function TableMasuk({ stockins, params, setParams }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {stockins.data.map((stock) => (
+          {stockins.map((stock) => (
             <TableRow key={stock.id}>
               <TableCell className="font-medium">
                 {formatDate(new Date(stock.created_at), 'MM/dd/yyyy')}
@@ -48,7 +61,6 @@ export default function TableMasuk({ stockins, params, setParams }) {
                     <span>Edit</span>
                   </Button>
                 </Link>
-
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -100,24 +112,9 @@ export default function TableMasuk({ stockins, params, setParams }) {
           ))}
         </TableBody>
       </Table>
-      <Container className=" relative bottom-0 flex flex-wrap items-center gap-2 w-full">
-        {stockins.meta.links.map((item) => (
-          <Button
-            variant="ghost"
-            className={`${
-              item.url == null
-                ? 'text-gray-300 cursor-not-allowed'
-                : 'text-slate-800'
-            } w-auto p-2 h-9 flex justify-center items-center border hover:bg-clr-primary transition-all rounded bg-white`}
-            onClick={() =>
-              setParams({
-                ...params,
-                page: new URL(item.url).searchParams.get('page'),
-              })
-            }>
-            <span dangerouslySetInnerHTML={{ __html: item.label }} />
-          </Button>
-        ))}
+
+      <Container>
+        <SimplePagination links={links} meta={meta} />
       </Container>
     </>
   );

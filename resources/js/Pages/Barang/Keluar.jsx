@@ -17,7 +17,6 @@ import {
   DialogTrigger,
 } from '@/Components/ui/dialog';
 import { Label } from '@/Components/ui/label';
-import { debounce, pickBy } from 'lodash';
 import TableKeluar from '@/Components/TableKeluar';
 import Navbar from '@/Layouts/Navbar';
 import {
@@ -31,11 +30,14 @@ import {
 } from '@/Components/ui/select';
 import { ToastAction } from '@/Components/ui/toast';
 import { toast } from '@/Components/ui/use-toast';
+import { useFilter } from '@/hooks/useFilter.js';
 
-export default function Keluar({ stockout }) {
-  const { stocks } = stockout;
+export default function Keluar(props) {
+    const { data: stockouts, meta, links } = props.stockouts;
+    const stocks = props.stocks;
+    console.log('stockoutsss ',stockouts);
 
-  const [params, setParams] = useState(stockout.filtered);
+  const [params, setParams] = useState(props.state);
   const { post, data, setData, reset } = useForm({
     stock_id: 0,
     quantity: 0,
@@ -63,28 +65,20 @@ export default function Keluar({ stockout }) {
         }),
     });
     reset('stock_id', 'quantity', 'customer');
-    location.reload()
+
   };
   const handleExportPDF = () => {
-    window.location.href = `/export-pdf-stock-out?start_date=${params.start_date}&end_date=${params.end_date}`;
+    window.location.href = `/export-pdf-stock-out?start_date=${params?.start_date}&end_date=${params?.end_date}`;
   };
 
   const handleStockName = (val) => {
     setData('stock_id', val);
   };
-
-  const reload = useCallback(
-    debounce((query) => {
-      router.get(route('stock.out'), pickBy(query), {
-        preserveState: true,
-      });
-    }, 150),
-    []
-  );
-  const onChange = (event) => {
-    setParams({ ...params, [event.target.name]: event.target.value });
-  };
-  useEffect(() => reload(params), [params]);
+  useFilter({
+        route: route('stock.out'),
+        values: params,
+        only: ['stockouts'],
+  });
   return (
     <>
       <Head title="Barang Keluar" />
@@ -101,10 +95,16 @@ export default function Keluar({ stockout }) {
             <Search width={17} height={17} />
             <Input
               type="text"
-              name="q"
-              value={params.q}
-              onChange={onChange}
-              placeholder="Cari by pelanggan..."
+              name="search"
+              name="search"
+              value={params?.search}
+              onChange={(e) =>
+                  setParams((prev) => ({
+                      ...prev,
+                      search: e.target.value,
+                  }))
+              }
+              placeholder="Cari Mesin"
             />
           </div>
           <div className="flex items-center gap-4">
@@ -115,8 +115,10 @@ export default function Keluar({ stockout }) {
                   <Input
                     type="date"
                     name="start_date"
-                    value={params.start_date}
-                    onChange={onChange}
+                    value={params?.start_date} onChange={(e) => setParams((prev) => ({
+                      ...prev,
+                      start_date: e.target.value
+                  }))} name="start_date"
                   />
                 </div>
                 <div className="flex items-center">
@@ -124,8 +126,10 @@ export default function Keluar({ stockout }) {
                   <Input
                     type="date"
                     name="end_date"
-                    value={params.end_date}
-                    onChange={onChange}
+                    value={params?.end_date} onChange={(e) => setParams((prev) => ({
+                      ...prev,
+                      end_date: e.target.value
+                  }))}
                   />
                 </div>
               </form>
@@ -162,7 +166,7 @@ export default function Keluar({ stockout }) {
                           <SelectGroup>
                             <SelectLabel>Barang</SelectLabel>
                             {/* Use map to loop over the dynamic list */}
-                            {stocks.map((data) => (
+                            {stocks.data.map((data) => (
                               // Make sure to set a unique key for each SelectItem
                               <SelectItem key={data.id} value={`${data.id}`}>
                                 {data.name}
@@ -206,6 +210,7 @@ export default function Keluar({ stockout }) {
               </DialogContent>
             </Dialog>
             <Button
+                disabled={params?.start_date && params?.end_date ? false : true}
               onClick={handleExportPDF}
               className="flex items-center gap-2 text-xs">
               <span>
@@ -216,19 +221,15 @@ export default function Keluar({ stockout }) {
           </div>
         </div>
 
-        {stockout.data.length > 0 ? (
+
           <TableKeluar
-            stockouts={stockout}
+            stockouts={stockouts}
+            links={links}
+            meta={meta}
             params={params}
             setParams={setParams}
           />
-        ) : (
-          <div className="p-2 border-2 w-full border-dashed">
-            <h1 className="text-sm font-bold flex justify-center items-center w-full h-[300px]">
-              Tidak ada data
-            </h1>
-          </div>
-        )}
+
       </Container>
     </>
   );
