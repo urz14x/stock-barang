@@ -4,7 +4,7 @@ import Container from '@/Components/Container';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Head, router, useForm } from '@inertiajs/react';
-import { FileText, PlusCircle, Search } from 'lucide-react';
+import { CalendarIcon, FileText, PlusCircle, Search } from 'lucide-react';
 import {
   Dialog,
   DialogClose,
@@ -31,14 +31,19 @@ import { cn } from '@/lib/utils';
 import { toast } from '@/Components/ui/use-toast';
 import { ToastAction } from '@/Components/ui/toast';
 import { useFilter } from '@/hooks/useFilter';
-
+import { Popover, PopoverContent, PopoverTrigger } from '@/Components/ui/popover.jsx';
+import { format } from "date-fns"
+import { Calendar } from '@/Components/ui/calendar.jsx';
 export default function Masuk(props) {
+  const [date, setDate] = useState(null)
+
   const { data: stockins, meta, links } = props.stockins;
   const stocks = props.stocks;
   const [params, setParams] = useState(props.state);
   const { data, setData, post, reset } = useForm({
     stock_id: 0,
     quantity: 0,
+    input_date: undefined,
   });
   const handleExportPDF = () => {
     window.location.href = `/export-pdf?start_date=${params?.start_date}&end_date=${params?.end_date}`;
@@ -68,6 +73,11 @@ export default function Masuk(props) {
     });
     reset('name', 'stock');
   };
+
+  const convertToISOString = (date) => {
+      const tanggal = new Date(date).toISOString();
+      setData('input_date', tanggal)
+   }
   const handleStockName = (val) => {
     setData('stock_id', val);
   };
@@ -76,6 +86,7 @@ export default function Masuk(props) {
     values: params,
     only: ['stockins'],
   });
+    console.log('tanggal, ',data.input_date);
   return (
     <>
       <Head title="Barang Masuk" />
@@ -139,12 +150,12 @@ export default function Masuk(props) {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={submitHandler}>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Name
-                      </Label>
-                      {/* <select
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">
+                                Name
+                            </Label>
+                            {/* <select
                         name="name"
                         onChange={(e) => setData('stock_id', e.target.value)}
                         id="name">
@@ -153,51 +164,57 @@ export default function Masuk(props) {
                           <option value={data.id}>{data.name}</option>
                         ))}
                       </select> */}
-                      <Select
-                        className="w-full"
-                        onValueChange={handleStockName}>
-                        <SelectTrigger className="w-[280px]">
-                          <SelectValue placeholder="Pilih Nama Barang" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Barang</SelectLabel>
+                            <Select
+                                className="w-full"
+                                onValueChange={handleStockName}>
+                                <SelectTrigger className="w-[280px]">
+                                    <SelectValue placeholder="Pilih Nama Barang" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Barang</SelectLabel>
 
-                            {stocks.data.map((stock) => (
-                              // Make sure to set a unique key for each SelectItem
-                              <SelectItem key={stock.id} value={`${stock.id}`}>
-                                {stock.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                                        {stocks.data.map((stock) => (
+                                            // Make sure to set a unique key for each SelectItem
+                                            <SelectItem key={stock.id} value={`${stock.id}`}>
+                                                {stock.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="stock" className="text-right">
+                                Kuantitas
+                            </Label>
+                            <Input
+                                id="stock"
+                                onChange={(e) => setData('quantity', e.target.value)}
+                                type="number"
+                                value={data.quantity}
+                                className="col-span-3 border"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="stock" className="text-right">
+                                Tanggal Masuk (opsional)
+                            </Label>
+                            <Input type={"date"} className="" name="input_date" value={data.input_date} onChange={e => convertToISOString(e.target.value)} />
+                        </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="stock" className="text-right">
-                        Kuantitas
-                      </Label>
-                      <Input
-                        id="stock"
-                        onChange={(e) => setData('quantity', e.target.value)}
-                        type="number"
-                        value={data.quantity}
-                        className="col-span-3 border"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type="submit">Simpan</Button>
-                    </DialogClose>
-                  </DialogFooter>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button type="submit">Simpan</Button>
+                        </DialogClose>
+                    </DialogFooter>
                 </form>
               </DialogContent>
             </Dialog>
-            <Button
-                disabled={params?.start_date && params?.end_date ? false : true}
-              onClick={handleExportPDF}
-              className="flex items-center gap-2 text-xs">
+              <Button
+                  disabled={params?.start_date && params?.end_date ? false : true}
+                  onClick={handleExportPDF}
+                  className="flex items-center gap-2 text-xs">
               <span>
                 <FileText width={17} height={17} />
               </span>

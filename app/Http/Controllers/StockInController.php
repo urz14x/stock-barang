@@ -43,7 +43,8 @@ class StockInController extends Controller
         // }
 
         StockIn::updateOrCreate(['stock_id' => $request->stock_id], [
-            'quantity' => $request->quantity
+            'quantity' => $request->quantity,
+            'created_at'=>$request->input_date ?? Carbon::now()
         ]);
 
         // $stock->stock += $request->quantity;

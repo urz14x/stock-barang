@@ -43,7 +43,8 @@ class StockOutController extends Controller
         $stock->save();
         StockOut::updateOrCreate(['stock_id' => $request->stock_id], [
             'quantity' => $request->quantity,
-            'customer' => $request->customer
+            'customer' => $request->customer,
+            'created_at'=>$request->input_date ?? Carbon::now()
         ]);
 
         return redirect('/stock-out');

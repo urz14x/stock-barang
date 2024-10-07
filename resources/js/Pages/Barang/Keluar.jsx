@@ -67,6 +67,10 @@ export default function Keluar(props) {
     reset('stock_id', 'quantity', 'customer');
 
   };
+    const convertToISOString = (date) => {
+        const tanggal = new Date(date).toISOString();
+        setData('input_date', tanggal)
+    }
   const handleExportPDF = () => {
     window.location.href = `/export-pdf-stock-out?start_date=${params?.start_date}&end_date=${params?.end_date}`;
   };
@@ -151,67 +155,74 @@ export default function Keluar(props) {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={submitHandler}>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Nama
-                      </Label>
-                      <Select
-                        className="w-full"
-                        onValueChange={handleStockName}>
-                        <SelectTrigger className="w-[280px]">
-                          <SelectValue placeholder="Pilih Nama Barang" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Barang</SelectLabel>
-                            {/* Use map to loop over the dynamic list */}
-                            {stocks.data.map((data) => (
-                              // Make sure to set a unique key for each SelectItem
-                              <SelectItem key={data.id} value={`${data.id}`}>
-                                {data.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">
+                                Nama
+                            </Label>
+                            <Select
+                                className="w-full"
+                                onValueChange={handleStockName}>
+                                <SelectTrigger className="w-[280px]">
+                                    <SelectValue placeholder="Pilih Nama Barang" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Barang</SelectLabel>
+                                        {/* Use map to loop over the dynamic list */}
+                                        {stocks.data.map((data) => (
+                                            // Make sure to set a unique key for each SelectItem
+                                            <SelectItem key={data.id} value={`${data.id}`}>
+                                                {data.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="stock" className="text-right">
+                                Kuantitas
+                            </Label>
+                            <Input
+                                type="number"
+                                id="stock"
+                                value={data.quantity}
+                                onChange={(e) => setData('quantity', e.target.value)}
+                                className="col-span-3 border"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="stock" className="text-right">
+                                Pelanggan
+                            </Label>
+                            <Input
+                                type="text"
+                                id="stock"
+                                value={data.customer}
+                                onChange={(e) => setData('customer', e.target.value)}
+                                className="col-span-3 border"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="stock" className="text-right">
+                                Tanggal Keluar (opsional)
+                            </Label>
+                            <Input type={'date'} className="" name="input_date" value={data.input_date}
+                                   onChange={e => convertToISOString(e.target.value)} />
+                        </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="stock" className="text-right">
-                        Kuantitas
-                      </Label>
-                      <Input
-                        type="number"
-                        id="stock"
-                        value={data.quantity}
-                        onChange={(e) => setData('quantity', e.target.value)}
-                        className="col-span-3 border"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="stock" className="text-right">
-                        Pelanggan
-                      </Label>
-                      <Input
-                        type="text"
-                        id="stock"
-                        value={data.customer}
-                        onChange={(e) => setData('customer', e.target.value)}
-                        className="col-span-3 border"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type="submit">Simpan</Button>
-                    </DialogClose>
-                  </DialogFooter>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button type="submit">Simpan</Button>
+                        </DialogClose>
+                    </DialogFooter>
                 </form>
               </DialogContent>
             </Dialog>
-            <Button
-                disabled={params?.start_date && params?.end_date ? false : true}
-              onClick={handleExportPDF}
+              <Button
+                  disabled={params?.start_date && params?.end_date ? false : true}
+                  onClick={handleExportPDF}
               className="flex items-center gap-2 text-xs">
               <span>
                 <FileText width={17} height={17} />
