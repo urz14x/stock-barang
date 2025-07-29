@@ -90,7 +90,7 @@ export default function Register() {
                         name="name"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
-                        placeholder="eg. Tasya Fitri Sawaliyah"
+                        placeholder="eg. Admin"
                       />
 
                     </div>
@@ -117,7 +117,7 @@ export default function Register() {
                         name="email"
                         value={data.email}
                         onChange={(e) => setData('email', e.target.value)}
-                        placeholder="tasyafs@gmail.com"
+                        placeholder="admin@gmail.com"
                       />
 
                     </div>
