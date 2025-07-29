@@ -5,20 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StockOut extends Model
+class StockOutDetail extends Model
 {
     use HasFactory;
-    protected $guarded = [];
-    public function stock()
+    protected $fillable = ['stock_out_id', 'stock_in_id', 'quantity'];
+    public function stockOut()
     {
-        return $this->belongsTo(Stock::class);
+        return $this->belongsTo(StockOut::class);
     }
+
     public function stockIn()
     {
         return $this->belongsTo(StockIn::class);
-    }
-    public function details()
-    {
-        return $this->hasMany(StockOutDetail::class);
     }
 }

@@ -12,14 +12,14 @@ class StockController extends Controller
     public function index(Request $request)
     {
         $query = Stock::query();
-        if($request->has('q') && !empty($request->input('search'))){
+        if ($request->has('q') && !empty($request->input('search'))) {
             $search = $request->q;
 
             $query->where('name', 'like', '%' . $search . '%');
 
             // Dapatkan semua hasil yang cocok dengan pencarian tanpa pagination
             $stocks = $query->get();
-        }else {
+        } else {
             // Jika tidak ada pencarian, gunakan pagination
             $stocks = (
                 StockResource::collection(Stock::query()->where('name', 'like', '%' . $request->q . '%')->with('stock_ins')->select('id', 'name', 'stock', 'created_at')->paginate(5))
@@ -57,7 +57,6 @@ class StockController extends Controller
     {
         $attributes = $request->validate([
             'name' => 'required|string|max:100',
-            'stock' => 'required|integer|max:9999',
         ]);
         Stock::create($attributes);
         return  to_route('dashboard');

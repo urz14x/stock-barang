@@ -2,11 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class StockInResource extends JsonResource
+class StockOutDetailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +16,10 @@ class StockInResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'stock_id' => $this->stock_id,
-            'stocks_name' => $this->stock->name,
+            'stock_in_id' => $this->stock_in_id,
+            'stock_out_id' => $this->stock_out_id,
             'quantity' => $this->quantity,
-            'remaining_quantity' => $this->remaining_quantity,
-            'input_date' => $this->input_date,
-            'created_at' => $this->created_at,
+            'stock_in' => new StockInResource($this->whenLoaded('stockIn')),
         ];
     }
 }

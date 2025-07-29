@@ -11,7 +11,7 @@ import { Button } from './ui/button';
 import { ArrowLeft, PencilIcon, Trash } from 'lucide-react';
 import { Link, router } from '@inertiajs/react';
 import Container from './Container';
-import { formatDate } from 'date-fns';
+import { format, formatDate } from 'date-fns';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -31,16 +31,20 @@ export default function TableMasuk({
 }) {
   const deleteStockIn = (id) => {
     location.href = `/stock-in?start_date=${params.start_date}&end_date=${params.end_date}`;
-    router.delete(`/stock-in/${id}`);
+    router.delete(`/stock-in/${id}`, {
+        preserveScroll: true,
+      });
   };
   return (
     <>
       <Table className="border text-xs">
         <TableHeader className="bg-clr-secondary">
           <TableRow>
-            <TableHead className="w-[150px]">Tanggal</TableHead>
+            <TableHead className="w-[150px]">Tanggal Dibuat</TableHead>
+            <TableHead>Tanggal Masuk</TableHead>
             <TableHead>Nama barang</TableHead>
             <TableHead>Jumlah</TableHead>
+            <TableHead>Sisa</TableHead>
             <TableHead className="text-left">Aksi</TableHead>
           </TableRow>
         </TableHeader>
@@ -50,8 +54,14 @@ export default function TableMasuk({
               <TableCell className="font-medium">
                 {formatDate(new Date(stock.created_at), 'MM/dd/yyyy')}
               </TableCell>
+              <TableCell>
+                {stock.input_date && !isNaN(new Date(stock.input_date))
+                  ? format(new Date(stock.input_date), 'dd MMM yyyy')
+                  : 'Tanggal tidak valid'}
+              </TableCell>
               <TableCell>{stock.stocks_name}</TableCell>
               <TableCell>{stock.quantity}</TableCell>
+              <TableCell>{stock.remaining_quantity}</TableCell>
               <TableCell className="flex items-center gap-4">
                 <Link href={`/stock-in-edit/${stock.id}`}>
                   <Button className="flex items-center gap-1">
@@ -111,11 +121,25 @@ export default function TableMasuk({
             </TableRow>
           ))}
         </TableBody>
+        {stockins.length === 0 && (
+          <tr>
+            <td colSpan={5} className="text-center py-4 text-gray-500">
+              Tidak ada data ditemukan.
+            </td>
+          </tr>
+        )}
       </Table>
 
-      <Container>
-        <SimplePagination links={links} meta={meta} />
-      </Container>
+      <div className="flex justify-between w-full items-center px-4 py-2 font-semibold">
+        <div>
+          Halaman {meta?.current_page ?? 1} dari {meta?.last_page ?? 1}
+        </div>
+        <div className="flex gap-2">
+          <Container>
+            <SimplePagination links={links} meta={meta} />
+          </Container>
+        </div>
+      </div>
     </>
   );
 }

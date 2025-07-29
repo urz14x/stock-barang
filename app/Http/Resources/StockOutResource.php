@@ -16,10 +16,13 @@ class StockOutResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'stocks_name' => $this->stock->name,
+            'stock_id' => $this->stock_id,
+            'stocks_name' => $this->stock->name ?? null,
             'quantity' => $this->quantity,
             'customer' => $this->customer,
-            'created_at' => $this->created_at
+            'output_date' => $this->output_date,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'details' => StockOutDetailResource::collection($this->whenLoaded('details')),
         ];
     }
 }

@@ -14,4 +14,8 @@ class Stock extends Model
     {
         return $this->hasMany(StockIn::class);
     }
+    public function stock_outs()
+    {
+        return $this->hasMany(StockOut::class);
+    }
 }

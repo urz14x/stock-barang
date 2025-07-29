@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('stock_outs', function (Blueprint $table) {
             $table->id();
             $table->foreignId("stock_id")->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('stock_in_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('quantity');
             $table->string("customer");
+            $table->timestamp('output_date')->nullable();
             $table->timestamps();
         });
     }

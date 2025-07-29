@@ -45,8 +45,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/stock-out', [StockOutController::class, 'index'])->name('stock.out');
     Route::post('/stock-out', [StockOutController::class, 'store'])->name('stock.out.store');
-    Route::delete('/stock-out/{id}', [StockOutController::class, 'destroy'])->name('stock.out.delete');
+    Route::delete('/stock-out/{id}', [StockOutController::class, 'destroy'])->name('stock.out.destroy');
     Route::get('/export-pdf-stock-out', [PDFExportController::class, 'exportPDFStockOut'])->name('export.pdf.stockout');
+
+    Route::get('/stock-out/{id}', [StockOutController::class, 'show']);
 });
 
 require __DIR__ . '/auth.php';

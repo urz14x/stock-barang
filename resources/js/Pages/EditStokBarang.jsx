@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import App from '@/Layouts/App';
 import Navbar from '@/Layouts/Navbar';
 import { Head, router, useForm } from '@inertiajs/react';
@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/Components/ui/card';
@@ -44,6 +43,16 @@ export default function EditStokBarang({ stock }) {
         }),
     });
   };
+
+  useEffect(() => {
+    if (stock) {
+      setData({
+        name: stock.name,
+        stock: stock.stock,
+      });
+    }
+  }, [stock]);
+
   return (
     <>
       <Head title="Barang Masuk" />
@@ -67,9 +76,8 @@ export default function EditStokBarang({ stock }) {
                   Nama
                 </Label>
                 <Input
-                  placeholder={stock.name}
                   type="text"
-                  values={data.name}
+                  value={data.name}
                   onChange={(e) => setData('name', e.target.value)}
                   id="name"
                   className="col-span-3 border"
@@ -80,9 +88,8 @@ export default function EditStokBarang({ stock }) {
                   Stock
                 </Label>
                 <Input
-                  placeholder={stock.stock}
                   type="number"
-                  values={data.stock}
+                  value={data.stock}
                   onChange={(e) => setData('stock', e.target.value)}
                   id="stock"
                   className="col-span-3 border"

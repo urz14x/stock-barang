@@ -166,18 +166,7 @@ export default function Dashboard({ stocks }) {
                         className="col-span-3 border"
                       />
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="stock" className="text-right">
-                        Stok
-                      </Label>
-                      <Input
-                        type="text"
-                        id="stock"
-                        value={data.stock}
-                        onChange={(e) => setData('stock', e.target.value)}
-                        className="col-span-3 border"
-                      />
-                    </div>
+
                   </div>
 
                   <DialogFooter>

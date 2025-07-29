@@ -1,106 +1,146 @@
-import React from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/Components/ui/table';
-import { Button } from './ui/button';
-import { ArrowLeft, Pencil, Trash } from 'lucide-react';
-import { formatDate } from 'date-fns';
-import { router } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Table, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import Container from './Container';
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
-import SimplePagination from '@/Components/ui/pagination.jsx';
+import SimplePagination from './ui/pagination';
+import { format } from 'date-fns';
+import { Button } from './ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/Components/ui/dialog';
+import { Trash, Trash2 } from 'lucide-react';
+import { router } from '@inertiajs/react';
 
-export default function TableKeluar({ stockouts, links, meta, params, setParams, }) {
-  const deleteStockOut = (id) => {
-    location.href = `/stock-out?start_date=${params.start_date}&end_date=${params.end_date}`;
-    router.delete(`/stock-out/${id}`);
+export default function TableKeluar({
+  stockouts,
+  meta,
+  links,
+  params,
+  setParams,
+}) {
+  const [detailModal, setDetailModal] = useState(false);
+  const [stockOutDetails, setStockOutDetails] = useState([]);
+  const [stockOutId, setStockOutId] = useState(null);
+
+  const handleShowDetail = async (id) => {
+    try {
+      const response = await axios.get(`/stock-out/${id}`);
+      setStockOutDetails(response.data.details);
+      setStockOutId(id);
+      setDetailModal(true);
+    } catch (error) {
+      console.error('Gagal memuat detail:', error);
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (confirm('Yakin ingin menghapus data ini?')) {
+      router.delete(`/stock-out/${id}`, {
+        preserveScroll: true,
+      });
+    }
   };
   return (
-    <>
-    <Table className="border text-xs">
-      <TableHeader className="bg-clr-secondary">
-        <TableRow>
-          <TableHead className="w-[100px]">Tanggal</TableHead>
-          <TableHead>Nama barang</TableHead>
-          <TableHead>Jumlah</TableHead>
-          <TableHead>Pelanggan</TableHead>
-          <TableHead className="text-left">Aksi</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {stockouts.map((stock) => (
-          <TableRow key={stock.id}>
-            <TableCell className="font-medium">
-              {formatDate(new Date(stock.created_at), 'MM-dd-yyyy')}
-            </TableCell>
-            <TableCell>{stock.stocks_name}</TableCell>
-            <TableCell>{stock.quantity}</TableCell>
-            <TableCell>{stock.customer}</TableCell>
-            <TableCell className="flex items-center gap-4">
-              <Button className="flex items-center gap-2">
-                <span>
-                  <Pencil width={16} height={16} />
-                </span>
-                <span>Edit</span>
-              </Button>
-              <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="flex items-center gap-2 text-red-500">
-                      <span>
-                        <Trash width={16} height={16} />
-                      </span>
-                      <span>Hapus</span>
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Apakah anda benar-benar ingin Menghapus stock
-                        {stock.name}?
-                      </AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>
-                        <Button variant="ghost" className="w-full">
-                          <div className="flex items-center gap-2 ">
-                            <span>
-                              <ArrowLeft width={17} height={17} />
-                            </span>
-                            <span>Kembali</span>
-                          </div>
-                        </Button>
-                      </AlertDialogCancel>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>
-                          <Button
-                            variant="ghost"
-                            onClick={() => deleteStockOut(stock.id)}
-                            className="flex items-center gap-2 text-red-500">
-                            <span>
-                              <Trash width={16} height={16} />
-                            </span>
-                            <span>Hapus saja</span>
-                          </Button>
-                        </AlertDialogCancel>
-                      </AlertDialogFooter>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-            </TableCell>
+    <div className="w-full overflow-x-auto rounded-lg border">
+      <Table className="border text-xs">
+        <TableHeader className="bg-clr-secondary">
+          <TableRow>
+            <TableHead className="px-4 py-2 text-left">
+              Tanggal Dibuat
+            </TableHead>
+            <TableHead className="px-4 py-2 text-left">
+              Tanggal Keluar
+            </TableHead>
+            <TableHead className="px-4 py-2 text-left">Nama Barang</TableHead>
+            <TableHead className="px-4 py-2 text-left">Jumlah Keluar</TableHead>
+            <TableHead className="px-4 py-2 text-left">Pelanggan</TableHead>
+            <TableHead className="px-4 py-2 text-left">Aksi</TableHead>
+            <TableHead className="px-4 py-2 text-left">Detail</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-        <Container>
+        </TableHeader>
+        <tbody>
+          {stockouts?.length === 0 && (
+            <TableRow>
+              <td colSpan={5} className="text-center py-4 text-gray-500">
+                Tidak ada data ditemukan.
+              </td>
+            </TableRow>
+          )}
+          <Dialog open={detailModal} onOpenChange={setDetailModal}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Detail FIFO Barang Keluar</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-2 text-sm">
+                {stockOutDetails.length === 0 ? (
+                  <p className="text-muted-foreground">
+                    Tidak ada detail ditemukan.
+                  </p>
+                ) : (
+                  stockOutDetails.map((detail, index) => (
+                    <div key={index} className="flex flex-col space-y-3.5">
+                      <p>
+                        <strong>Diambil dari barang masuk:</strong>{' '}
+                        {detail.stock_in?.input_date ?? '-'}
+                      </p>
+                      <p>
+                        <strong>Jumlah:</strong> {detail.quantity}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+          {stockouts?.map((stockout, index) => (
+            <TableRow key={stockout.id} className="border-t">
+              <TableCell className="px-4 py-2">
+                {new Date(stockout.created_at).toLocaleDateString()}
+              </TableCell>
+              <TableCell>
+                {stockout.output_date && !isNaN(new Date(stockout.output_date))
+                  ? format(new Date(stockout.output_date), 'dd MMM yyyy')
+                  : 'Tanggal tidak valid'}
+              </TableCell>
+              <TableCell>{stockout.stocks_name ?? '-'}</TableCell>
+              <TableCell>{stockout.quantity}</TableCell>
+              <TableCell>{stockout.customer}</TableCell>
+              <TableCell>
+                <Button
+                  variant="ghost"
+                  onClick={() => handleDelete(stockout.id)}
+                  className="flex items-center gap-2 text-red-500">
+                  <span>
+                    <Trash width={16} height={16} />
+                  </span>
+                  <span>Hapus</span>
+                </Button>
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="link"
+                  onClick={() => handleShowDetail(stockout.id)}>
+                  Lihat Detail
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </tbody>
+      </Table>
+
+      {/* Pagination jika diperlukan */}
+      <div className="flex justify-between items-center px-4 py-2 font-semibold">
+        <div>
+          Halaman {meta?.current_page ?? 1} dari {meta?.last_page ?? 1}
+        </div>
+        <div className="flex gap-2">
+          <Container>
             <SimplePagination links={links} meta={meta} />
-        </Container>
-    </>
+          </Container>
+        </div>
+      </div>
+    </div>
   );
 }
