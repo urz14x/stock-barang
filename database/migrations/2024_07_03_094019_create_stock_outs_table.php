@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('stock_in_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('quantity');
             $table->string("customer");
-            $table->timestamp('output_date')->nullable();
+            $table->date('output_date')->nullable();
             $table->timestamps();
         });
     }

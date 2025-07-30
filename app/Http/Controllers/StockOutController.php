@@ -17,8 +17,8 @@ class StockOutController extends Controller
 {
     public function index(Request $request)
     {
-        $start_date = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : Carbon::now()->startOfDay();
-        $end_date = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
+        $start_date = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : Carbon::minValue();
+        $end_date = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::maxValue();
         $search = $request->input('search');
 
         $stockouts = StockOut::with(['stock'])

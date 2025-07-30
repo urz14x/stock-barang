@@ -114,8 +114,9 @@ export default function Masuk(props) {
             Berikut stok barang yang Masuk. Mesin.
           </p>
         </div>
-        <div className="flex justify-between px-2 w-full">
-          <div className="flex items-center bg-background w-[250px] border border-input rounded-md px-2">
+        <div className="flex flex-col md:flex-row justify-between gap-3 px-2 w-full">
+        <div className="flex items-center bg-background w-full md:w-[250px] border border-input rounded-md px-2">
+
             <Search width={17} height={17} />
             <Input
               type="text"
@@ -130,8 +131,8 @@ export default function Masuk(props) {
               placeholder="Cari Mesin"
             />
           </div>
-          <div className="flex items-center gap-4">
-            <form className={cn('flex items-center gap-5')}>
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full">
+          <form className={cn('flex flex-col md:flex-row gap-5 w-full')}>
               <div className="flex items-center gap-5">
                 <div className="flex items-center gap-2">
                   <label className="w-28">Start date</label>

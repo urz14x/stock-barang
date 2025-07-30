@@ -31,7 +31,6 @@ export default function TableStock({ stocks, params, setParams }) {
       <Table className="border bg-red-500h h-1/2 text-xs">
         <TableHeader className="bg-clr-secondary">
           <TableRow>
-            <TableHead className="w-[100px]">Tanggal</TableHead>
             <TableHead>Nama barang</TableHead>
             <TableHead>Stock</TableHead>
             <TableHead className="text-left">Aksi</TableHead>
@@ -40,9 +39,6 @@ export default function TableStock({ stocks, params, setParams }) {
         <TableBody>
           {stocks.data.map((stock, i) => (
             <TableRow key={i + 1}>
-              <TableCell className="font-medium">
-                {formatDate(new Date(stock.created_at), 'MM/dd/yyyy')}
-              </TableCell>
               <TableCell>{stock.name}</TableCell>
               <TableCell className="font-bold">{stock.stock}</TableCell>
               <TableCell className="flex items-center gap-4">

@@ -19,9 +19,14 @@ import {
 
 import { Button } from '@/Components/ui/button';
 
-export default function Sidebar() {
+export default function sidebar({ show, setShow }) {
   return (
-    <div className="flex items-center fixed z-50">
+    <div className={`
+        fixed top-0 left-0 z-50
+        transition-transform duration-300
+        ${show ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0
+      `}>
       <nav className="w-[300px] min-h-screen flex flex-col justify-between border-r p-4 bg-clr-secondary">
         <header className="flex flex-col items-center w-full">
           <img src="/img/Logo.png" className="w-32 h-32" alt="" />

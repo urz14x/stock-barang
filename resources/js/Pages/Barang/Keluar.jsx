@@ -92,12 +92,12 @@ export default function Keluar(props) {
     setOutputDate(null);
     setSelectedStock(null);
   };
-  const convertToISOString = (date) => {
+  const convertToLocalDateString = (date) => {
     if (date instanceof Date && !isNaN(date)) {
-      const iso = date.toISOString();
-      setData('output_date', iso);
+      const formatted = format(date, 'yyyy-MM-dd'); // ✅ lokal format
+      setData('output_date', formatted);
     } else {
-      setData('output_date', null); // fallback jika null/tidak valid
+      setData('output_date', null);
     }
   };
   const handleExportPDF = () => {
@@ -125,13 +125,16 @@ export default function Keluar(props) {
             Berikut stok barang yang Keluar. Mesin.
           </p>
         </div>
-        <div className="flex items-center justify-between px-2 w-full">
-          <div className="flex items-center bg-background border border-input rounded-md px-2">
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between px-2 gap-4 w-full">
+          {/* Search Input */}
+          <div className="flex items-center w-full bg-background border border-input rounded-md px-2">
             <Search width={17} height={17} />
             <Input
               type="text"
               name="search"
               value={params?.search}
+              className="w-[200px]"
               onChange={(e) =>
                 setParams((prev) => ({
                   ...prev,
@@ -141,206 +144,210 @@ export default function Keluar(props) {
               placeholder="Cari Mesin"
             />
           </div>
-          <div className="flex items-center gap-4">
-            <div>
-              <form className={cn('flex items-center gap-5')}>
-                <div className="flex items-center gap-2">
-                  <label className="w-28">Start date</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-[180px] justify-start text-left font-normal',
-                          !startDate && 'text-muted-foreground'
-                        )}>
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? (
-                          format(startDate, 'dd MMMM yyyy')
-                        ) : (
-                          <span>Pilih tanggal</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={(date) => {
-                          setStartDate(date);
-                          setParams((prev) => ({
-                            ...prev,
-                            start_date: date
-                              ? format(date, 'yyyy-MM-dd')
-                              : null,
-                          }));
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="flex items-center gap-2">
-                  <label className="w-28">End date</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-[180px] justify-start text-left font-normal',
-                          !endDate && 'text-muted-foreground'
-                        )}>
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {endDate ? (
-                          format(endDate, 'dd MMMM yyyy')
-                        ) : (
-                          <span>Pilih tanggal</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={(date) => {
-                          setEndDate(date);
-                          setParams((prev) => ({
-                            ...prev,
-                            end_date: date ? format(date, 'yyyy-MM-dd') : null,
-                          }));
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </form>
-            </div>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="flex items-center gap-2 text-xs">
-                  <span>
-                    <PlusCircle width={17} height={17} />
-                  </span>
-                  <span>Barang Keluar</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Tambah barang Keluar</DialogTitle>
-                  <DialogDescription>
-                    Form Pengisian barang Keluar
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={submitHandler}>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Nama
-                      </Label>
-                      <Select
-                        className="w-full"
-                        onValueChange={handleStockName}>
-                        <SelectTrigger className="w-[280px]">
-                          <SelectValue placeholder="Pilih Nama Barang" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Barang</SelectLabel>
-                            {/* Use map to loop over the dynamic list */}
-                            {stocks.data.map((data) => (
-                              // Make sure to set a unique key for each SelectItem
-                              <SelectItem key={data.id} value={`${data.id}`}>
-                                {data.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
 
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="stock" className="text-right">
-                        Kuantitas
-                      </Label>
-                      <Input
-                        type="number"
-                        id="stock"
-                        value={data.quantity}
-                        onChange={(e) => setData('quantity', e.target.value)}
-                        className="col-span-3 border"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="stock" className="text-right">
-                        Pelanggan
-                      </Label>
-                      <Input
-                        type="text"
-                        id="stock"
-                        value={data.customer}
-                        onChange={(e) => setData('customer', e.target.value)}
-                        className="col-span-3 border"
-                      />
-                    </div>
-                    <div className="flex justify-between items-center gap-2">
-                      <Label htmlFor="output_date" className="w-1/2">
-                        Tanggal Keluar (opsional)
-                      </Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              'w-1/2 justify-start text-left font-normal',
-                              !outputDate && 'text-muted-foreground'
-                            )}>
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {outputDate instanceof Date && !isNaN(outputDate)
-                              ? format(outputDate, 'dd MMMM yyyy')
-                              : 'Pilih tanggal'}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={outputDate}
-                            onSelect={(date) => {
-                              setOutputDate(date);
-                              convertToISOString(date);
-                            }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type="submit">Simpan</Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </form>
-                <DialogFooter>
-                {selectedStock && (
-                        <p className="text-sm text-muted-foreground mt-1 ml-[112px]">
-                          Stok tersedia dari data masuk:
-                          {selectedStock.available_stock === 0 ? ' Habis' : selectedStock.available_stock}
-                          {/* <strong>{selectedStock.available_stock}</strong> */}
-                        </p>
+          {/* Date & Actions */}
+          <div className="flex  gap-4 w-full md:w-auto">
+            <form className="flex flex-col sm:flex-row gap-2 w-full">
+              {/* Start Date */}
+              <div className="flex items-center w-full sm:w-auto">
+                <label className='w-full'>Start date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'w-full sm:w-[180px] justify-start text-left font-normal',
+                        !startDate && 'text-muted-foreground'
+                      )}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? (
+                        format(startDate, 'dd MMMM yyyy')
+                      ) : (
+                        <span>Pilih tanggal</span>
                       )}
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-            <Button
-              disabled={params?.start_date && params?.end_date ? false : true}
-              onClick={handleExportPDF}
-              className="flex items-center gap-2 text-xs">
-              <span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => {
+                        setStartDate(date);
+                        setParams((prev) => ({
+                          ...prev,
+                          start_date: date ? format(date, 'yyyy-MM-dd') : null,
+                        }));
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* End Date */}
+              <div className="flex items-center w-full sm:w-auto">
+                <label  className='w-full'>End date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'w-full sm:w-[180px] justify-start text-left font-normal',
+                        !endDate && 'text-muted-foreground'
+                      )}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? (
+                        format(endDate, 'dd MMMM yyyy')
+                      ) : (
+                        <span>Pilih tanggal</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+
+                      onSelect={(date) => {
+                        setEndDate(date);
+                        setParams((prev) => ({
+                          ...prev,
+                          end_date: date ? format(date, 'yyyy-MM-dd') : null,
+                        }));
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </form>
+
+            {/* Button Group */}
+            <div className="flex flex-col sm:flex-row gap-2 w-full">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="flex items-center gap-2 text-xs w-full sm:w-auto">
+                    <PlusCircle width={17} height={17} />
+                    <span>Barang Keluar</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Tambah barang Keluar</DialogTitle>
+                    <DialogDescription>
+                      Form Pengisian barang Keluar
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={submitHandler}>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Nama
+                        </Label>
+                        <Select
+                          className="w-full"
+                          onValueChange={handleStockName}>
+                          <SelectTrigger className="w-[280px]">
+                            <SelectValue placeholder="Pilih Nama Barang" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Barang</SelectLabel>
+                              {/* Use map to loop over the dynamic list */}
+                              {stocks.data.map((data) => (
+                                // Make sure to set a unique key for each SelectItem
+                                <SelectItem key={data.id} value={`${data.id}`}>
+                                  {data.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="stock" className="text-right">
+                          Kuantitas
+                        </Label>
+                        <Input
+                          type="number"
+                          id="stock"
+                          value={data.quantity}
+                          onChange={(e) => setData('quantity', e.target.value)}
+                          className="col-span-3 border"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="stock" className="text-right">
+                          Pelanggan
+                        </Label>
+                        <Input
+                          type="text"
+                          id="stock"
+                          value={data.customer}
+                          onChange={(e) => setData('customer', e.target.value)}
+                          className="col-span-3 border"
+                        />
+                      </div>
+                      <div className="flex justify-between items-center gap-2">
+                        <Label htmlFor="output_date" className="w-1/2">
+                          Tanggal Keluar (opsional)
+                        </Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'w-1/2 justify-start text-left font-normal',
+                                !outputDate && 'text-muted-foreground'
+                              )}>
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {outputDate instanceof Date && !isNaN(outputDate)
+                                ? format(outputDate, 'dd MMMM yyyy')
+                                : 'Pilih tanggal'}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={outputDate}
+                              onSelect={(date) => {
+                                setOutputDate(date);
+                                convertToLocalDateString(date);
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="submit">Simpan</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </form>
+                  <DialogFooter>
+                    {selectedStock && (
+                      <p className="text-sm text-muted-foreground mt-1 ml-[112px]">
+                        Stok tersedia dari data masuk:
+                        {selectedStock.available_stock === 0
+                          ? ' Habis'
+                          : selectedStock.available_stock}
+                        {/* <strong>{selectedStock.available_stock}</strong> */}
+                      </p>
+                    )}
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              <Button
+                className="flex items-center gap-2 text-xs w-full sm:w-auto"
+                disabled={params?.start_date && params?.end_date ? false : true}
+                onClick={handleExportPDF}>
                 <FileText width={17} height={17} />
-              </span>
-              <span>Export data</span>
-            </Button>
+                <span>Export data</span>
+              </Button>
+            </div>
           </div>
         </div>
 

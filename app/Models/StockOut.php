@@ -21,4 +21,7 @@ class StockOut extends Model
     {
         return $this->hasMany(StockOutDetail::class);
     }
+    protected $casts = [
+        'output_date' => 'date',
+    ];
 }

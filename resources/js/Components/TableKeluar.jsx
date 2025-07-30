@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Table, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import Container from './Container';
 import SimplePagination from './ui/pagination';
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -97,7 +97,7 @@ export default function TableKeluar({
           {stockouts?.map((stockout, index) => (
             <TableRow key={stockout.id} className="border-t">
               <TableCell className="px-4 py-2">
-                {new Date(stockout.created_at).toLocaleDateString()}
+                   {formatDate(new Date(stockout.created_at), 'MM/dd/yyyy')}
               </TableCell>
               <TableCell>
                 {stockout.output_date && !isNaN(new Date(stockout.output_date))
